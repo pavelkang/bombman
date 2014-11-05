@@ -19,6 +19,7 @@
         update: function() {
         },
         draw: function(screen, gameSize) {
+          screen.clearRect(0, 0, gameSize.x, gameSize.y);
         },
         addBody: function(body) {
         }
