@@ -22,7 +22,7 @@
     draw: function(screen, gameSize) {
       screen.clearRect(0, 0, gameSize.x, gameSize.y);
       this.safezones.forEach(function(zone) {
-        drawRect(screen, zone);
+        drawRect(screen, zone, zone.color);
       });
     },
     addBody: function(body) {
@@ -63,8 +63,11 @@
   var createBombs = function(game) {
   };
 
-  var drawRect = function(screen, body) {
+  var drawRect = function(screen, body, color) {
+    var oldStyle = screen.fillStyle;
+    screen.fillStyle = color;
     screen.fillRect(body.center.x - body.size.x / 2, body.center.y - body.size.y / 2, body.size.x, body.size.y);
+    screen.fillStyle = oldStyle;
   };
 
   var colliding = function(b1, b2) {
