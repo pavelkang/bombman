@@ -42,19 +42,19 @@
     this.game = game;
     this.color = color;
     this.size = {
-      x: game.x / 5,
-      y: 2*game.y / 3
+      x: game.x / 4,
+      y: 2*game.y / 5
     };
     if (color === "red") {
       this.center = {
-        x: 0,
-        y: game.y / 5
+        x: 0 + (this.size.x / 2),
+        y: (game.y / 2)
       }
     }
     else if (color === "black") {
       this.center = {
-        x: 4*game.x / 5,
-        y: game.y / 5
+        x: (game.x - this.size.x) + (this.size.x / 2),
+        y: (game.y / 2)
       }
     }
     else throw "Unexpected color in Safezone initialization";
