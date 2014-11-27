@@ -1,9 +1,15 @@
 ;(function() {
+    var REFRESH_RATE = 10;
+    var INIT_TOP = 200;
+    var INIT_LEFT = 200;
+    var DEC_RATE = 200;
+    var STEP = 3;
     var w = 500;
     var h = 500;
     var canvas = document.getElementById("screen");
     var drag = false;
     var targ, coordX, coordY, offsetX, offsetY;
+    var DIR = 0;
     
     function startDrag(e) {
         // ???
@@ -16,7 +22,6 @@
         targ = e.target ? e.target : e.srcElement;
         
         if (targ.className != "bomb") {
-            console.log("BN")
             return ;}
         offsetX = e.clientX;
         offsetY = e.clientY;
@@ -40,23 +45,40 @@
         drag = false;
     }
 
-
-
     window.onload = function() {
             // move
         var bomb = document.getElementById("b");
-        bomb.style.left = '0px';
-    function doMove() {
-        // Move right by 5
-        if (!bomb)
-            console.log("A");
-        bomb.style.left = parseInt(bomb.style.left) + 5 + 'px';
-        setTimeout(doMove, 20);
+        bomb.style.top = INIT_TOP;
+        bomb.style.left = INIT_LEFT;
+    }
 
+    /* 0: up, 1: right, 2: down, 3:left*/
+    function makeDecision() {
+        return Math.floor(Math.random() * 4);
+    }
+
+    /* make a move */
+    function makeMove(dir) {
+        switch (dir) {
+            case 0: // up
+                bomb.style.top = (parseInt(bomb.style.top) - STEP) + 'px';
+                break;
+            case 1: // right
+                bomb.style.left = parseInt(bomb.style.left) + STEP + 'px';
+                break;
+            case 2: // down
+                bomb.style.top = parseInt(bomb.style.top) + STEP + 'px';
+                break;
+            case 3: // left
+                bomb.style.left = (parseInt(bomb.style.left) - STEP) + 'px';
+                break;
+        }
         document.onmousedown = startDrag;
         document.onmouseup   = stopDrag;
     }
-    doMove();
+
+    setInterval(function(){makeMove(DIR);}, REFRESH_RATE);
+    setInterval(function(){DIR = makeDecision();}, DEC_RATE);
     }
     //setInterval(function(){alert("Hello")}, 3000);
 
