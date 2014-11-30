@@ -30,7 +30,9 @@
       requestAnimationFrame(tick);
     };
     tick();
-    createBomb(this);
+    for (var i = 0; i < 20; i++) {
+      createBomb(this);
+    }
   };
   Game.prototype = {
     update: function() {
@@ -105,7 +107,7 @@
   };
 
   var drawRect = function(screen, body, color) {
-    // explain?
+    // save old color so we can reset afterwards
     var oldStyle = screen.fillStyle;
     screen.fillStyle = color;
     screen.fillRect(body.center.x - body.size.x / 2, body.center.y - body.size.y / 2, body.size.x, body.size.y);
@@ -123,7 +125,6 @@
     return !(b1 === b2 || b1.center.x + b1.size.x / 2 < b2.center.x - b2.size.x / 2 || b1.center.y + b1.size.y / 2 < b2.center.y - b2.size.y / 2 || b1.center.x - b1.size.x / 2 > b2.center.x + b2.size.x / 2 || b1.center.y - b1.size.y / 2 > b2.center.y + b2.size.y / 2);
   };
 
-  // why is this a function, not an object?
   var Safezone = function(game, color) {
     this.game = game;
     this.color = color;
