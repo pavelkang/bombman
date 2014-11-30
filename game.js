@@ -58,47 +58,144 @@
     // pos 0 : top, 1 : bottom
     this.game = game;
     this.life = BOMB_LIFE;
-    this.dir = 0
     this.decInt = DECISION_INT;
-    if (!pos) {
-    this.center = {
-      x : game.birthPoints.top.x,
-      y : game.birthPoints.top.y
-    };} else {
-    this.center = {
-      x : game.birthPoints.down.x,
-      y : game.birthPoints.down.y
-    };      
-    }
+    this.safe = null;
     this.size = {
       x : BOMB_SIZE, y : BOMB_SIZE
     };
+    if (!pos) {
+      this.center = {
+        x : game.birthPoints.top.x,
+        y : game.birthPoints.top.y + this.size.y / 2
+      };
+      this.dirx = 0;
+      this.diry = -1;
+    } else {
+      this.center = {
+        x : game.birthPoints.down.x,
+        y : game.birthPoints.down.y - this.size.y / 2
+      };
+      this.dirx = 0;
+      this.diry = 1;
+    }
   };
   Bomb.prototype = {
     update: function() {
-      if (this.life > 0) {
-        this.life -= 1;
-      } else {
-        console.log("die TODO");
-        return ;
+      // check if the bomb is safe
+      if (!this.safe) {
+        for (var i = 0; i < game.safezones.length; i++) {
+          var zone = game.safezones[i];
+          // check if bomb is within a safezone
+          if (((this.center.x - this.size.x / 2) >
+               (zone.center.x - zone.size.x / 2)) &&
+              ((this.center.x + this.size.x / 2) <
+               (zone.center.x + zone.size.x / 2)) &&
+              ((this.center.y - this.size.y / 2) >
+               (zone.center.y - zone.size.y / 2)) &&
+              ((this.center.y + this.size.y / 2) <
+               (zone.center.y + zone.size.y / 2))) {
+            this.safe = zone.color;
+            break;
+          }
+        }
       }
-      // make new decision
+      // possibly change directions
       if (this.decInt <= 0) {
-        this.dir = makeDecision();
+        var newDirs = makeDecision();
+        this.dirx = newDirs[0];
+        this.diry = newDirs[1];
         this.decInt = DECISION_INT;
       } else {
         this.decInt--;
       }
-      // Move 
-      switch(this.dir) {
-        case 0 : // top
-          this.center.y -= STEP;
-          break;
-        case 1: // right
-          this.center.x += STEP;
-          break;
+
+      if (this.safe) {
+        // possibly buggy collision code for if in safezone
+        if (DRAG_OK) return;
+
+        for (var i = 0; i < game.safezones.length; i++) {
+          var zone = game.safezones[i];
+          if (this.safe != zone.color) {
+            continue;
+          }
+          var topdiff = (zone.center.y - zone.size.y / 2) -
+                        (this.center.y - this.size.y / 2);
+          if (0 <= topdiff && topdiff <= STEP) {
+            this.diry *= -1;
+          }
+          var bottomdiff = (this.center.y + this.size.y / 2) -
+                           (zone.center.y + zone.size.y / 2);
+          if (0 <= bottomdiff && bottomdiff <= STEP) {
+            this.diry *= -1;
+          }
+          if ((zone.center.x - zone.size.x / 2) -
+              (this.center.x - this.size.x / 2) <= STEP) {
+            this.dirx *= -1;
+          }
+          if ((this.center.x + this.size.x / 2) -
+              (zone.center.x + zone.size.x / 2) <= STEP) {
+            this.dirx *= -1;
+          }
+        }
       }
-    },
+      else {
+        if (this.life > 0) {
+          this.life -= -1;
+        } else {
+          console.log("die TODO");
+          return;
+        }
+
+        if (DRAG_OK) return;
+
+        // check for collision with canvas bounds
+        if ((this.center.x - this.size.x / 2) < 10 && this.dirx < 0) {
+          this.dirx *= -1;
+        }
+        if ((this.center.x + this.size.x / 2) > canvas.width
+            && this.dirx > 0) {
+          this.dirx *= -1;
+        }
+        if ((this.center.y - this.size.y / 2) < 0 && this.diry < 0) {
+          this.diry *= -1;
+        }
+        if ((this.center.y + this.size.y / 2) > canvas.height
+            && this.diry > 0) {
+          this.diry *= -1;
+        }
+
+        // check for collision with safezones
+        for (var i = 0; i < game.safezones.length; i++) {
+          if (colliding(this, game.safezones[i])) {
+            var zone = game.safezones[i];
+            if ((zone.center.x + zone.size.x / 2) -
+                (this.center.x - this.size.x / 2) <= STEP
+                && this.dirx < 0) {
+              this.dirx *= -1;
+            }
+            if ((this.center.x + this.size.x / 2) -
+                (zone.center.x - zone.size.x / 2) <= STEP
+                && this.dirx > 0) {
+              this.dirx *= -1;
+            }
+            if ((zone.center.y + zone.size.y / 2) -
+                (this.center.y - this.size.y / 2) <= STEP
+                && this.diry < 0) {
+              this.diry *= -1;
+            }
+            if ((this.center.y + this.size.y / 2) -
+                (zone.center.y - zone.size.y / 2) <= STEP
+                && this.diry > 0) {
+              this.diry *= -1;
+            }
+          }
+        }
+      }
+
+      // Move
+      this.center.x += this.dirx*STEP;
+      this.center.y += this.diry*STEP;
+    }
   };
 
   var createBomb = function(game) {
@@ -153,7 +250,8 @@
   };
 
   var makeDecision = function() {
-    return 1;
+    var newAngle = 2*Math.PI*Math.random();
+    return [Math.cos(newAngle), Math.sin(newAngle)];
   }
 
   // drag drop
@@ -163,7 +261,7 @@
       draggingBomb.center.y = e.pageY - canvas.offsetTop;
     }
   };
-  
+
   var myDown = function(e) {
     game.bombs.forEach( function(bomb) {
       x = bomb.center.x;
