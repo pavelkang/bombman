@@ -40,6 +40,12 @@
         this.bombs = [];
         this.safezones = [new Safezone(this.gameSize, RED),
                           new Safezone(this.gameSize, BLACK)];
+        this.explosions = [];
+        for (var i = 1; i <= 5; i++) {
+            var explosion = new Image();
+            explosion.src = "explosion"+i.toString()+".png";
+            this.explosions.push(explosion);
+        }
         var self = this;
         var tick = function() {
             if (IN_GAME == 0) { // game start
@@ -48,15 +54,25 @@
                 self.draw(self.screen, self.gameSize);
                 requestAnimationFrame(tick);
             } else if (IN_GAME == 2){
-                document.getElementById("actualGame")
-                    .style.display = "none"
-                document.getElementById("end")
-                    .style.display = "block"
-                /* Calculate the final score */
-                self.safezones.forEach(function(zone) {
-                    self.score += zone.bombs.length;
-                });
-                self.scoreboard.innerHTML = self.score;
+                setTimeout(function() {
+                    document.getElementById("actualGame")
+                        .style.display = "none"
+                    document.getElementById("end")
+                        .style.display = "block"
+                    document.getElementById("scoreParagraph")
+                        .style.display = "none"
+                    document.getElementById("screen")
+                        .style.display = "none"
+                    document.getElementById("gameOverMessage")
+                        .style.display = "block"
+                    console.log("Game Over!");
+                    /* Calculate the final score */
+                    self.safezones.forEach(function(zone) {
+                        self.score += zone.bombs.length;
+                    });
+                    self.scoreboard.innerHTML = self.score;
+                    console.log("The final score is " + self.score);
+                }, 2500);
             }
         };
         tick();
@@ -144,20 +160,31 @@
                         // check if bomb is in right safezone
                         if (this.color != zone.color) {
                             IN_GAME = 2;
-                            for (var i = 0; i < zone.bombs.length; i++) {
-                                for (var j = 0; j < game.bombs.length; j++) {
-                                    if (zone.bombs[i] === game.bombs[j]) {
-                                        delete game.bombs[j];
-                                        delete zone.bombs[i];
-                                        break;
+                            nextExplosion(this, 1);
+                            var self = this;
+                            setTimeout(function() {
+                                game.bombs.forEach(function(bomb) {
+                                    if (bomb !== self) {
+                                        nextExplosion(bomb, 1);
+                                    }
+                                });
+                            }, 1000);
+                            setTimeout(function() {
+                                for (var i = 0; i < zone.bombs.length; i++) {
+                                    for (var j = 0; j < game.bombs.length; j++) {
+                                        if (zone.bombs[i] === game.bombs[j]) {
+                                            delete game.bombs[j];
+                                            delete zone.bombs[i];
+                                            break;
+                                        }
                                     }
                                 }
-                            }
-                            game.bombs = game.bombs.filter(function(bomb) {
-                                return bomb;
-                            });
-                            zone.bombs = undefined;
-                            zone.bombs = [];
+                                game.bombs = game.bombs.filter(function(bomb) {
+                                    return bomb;
+                                });
+                                zone.bombs = undefined;
+                                zone.bombs = [];
+                            }, 2000);
                         }
                         // if we have enough bombs in the zone, clear it
                         if (zone.bombs.length >= MAX_BOMBS_PER_ZONE) {
@@ -227,8 +254,16 @@
                     }
                     this.life -= 1;
                 } else {
-                    console.log("die TODO");
                     IN_GAME = 2;
+                    nextExplosion(this, 1);
+                    var self = this;
+                    setTimeout(function() {
+                        game.bombs.forEach(function(bomb) {
+                            if (bomb !== self) {
+                                nextExplosion(bomb, 1);
+                            }
+                        });
+                    }, 1000);
                     return;
                 }
 
@@ -364,7 +399,6 @@
             draggingBomb.center.y = e.pageY - canvas.offsetTop;
         }
     };
-
     var myDown = function(e) {
         game.bombs.forEach( function(bomb) {
             x = bomb.center.x;
@@ -378,11 +412,21 @@
             }
         })
     }
-
     var myUp = function(){
         DRAG_OK = false;
         canvas.onmousemove = null;
         draggingBomb = null;
     }
 
+    var nextExplosion = function(bomb, num) {
+        if (num === 6) {
+            return;
+        }
+        bomb.image = game.explosions[num-1];
+        bomb.angry = false;
+        game.draw(game.screen, game.gameSize);
+        setTimeout(function() {
+            nextExplosion(bomb, num+1);
+        }, 100);
+    };
 })();
