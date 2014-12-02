@@ -43,6 +43,12 @@
                 self.draw(self.screen, self.gameSize);
                 requestAnimationFrame(tick);
             } else if (IN_GAME == 2){
+                document.getElementById("scoreParagraph")
+                    .style.display = "none"
+                document.getElementById("screen")
+                    .style.display = "none"
+                document.getElementById("gameOverMessage")
+                    .style.display = "block"
                 console.log("Game Over!");
                 /* Calculate the final score */
                 self.safezones.forEach(function(zone) {
@@ -319,10 +325,20 @@
         }
         else throw "Unexpected color in Safezone initialization";
     };
+
     window.onload = function() {
-        game = new Game('screen');
-        canvas.onmousedown = myDown;
-        canvas.onmouseup = myUp;
+        var clickToBegin = function(e) {
+            document.getElementById("gameStartMessage").style.display = "none"
+            document.getElementById("gameStartButton").style.display = "none"
+            document.getElementById("logo").style.display = "none"
+            document.getElementById("scoreParagraph").style.display = "block"
+            document.getElementById("screen").style.display = "block"
+            game = new Game('screen');
+            canvas.onmousedown = myDown;
+            canvas.onmouseup = myUp;
+        }
+        document.getElementById("gameStartButton")
+            .addEventListener("click", clickToBegin)
     };
 
     var makeDecision = function() {
