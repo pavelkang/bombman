@@ -97,10 +97,13 @@
         }
     };
 
-    var Bomb = function(game, center, pos, color, src) {
+    var Bomb = function(game, center, pos, color, src, angrysrc) {
         this.color = color;
         this.image = new Image();
         this.image.src = src;
+        this.angry = false;
+        this.angryimage = new Image();
+        this.angryimage.src = angrysrc;
         this.game = game;
         this.life = BOMB_LIFE;
         this.decInt = DECISION_INT;
@@ -139,8 +142,10 @@
                          (zone.center.y - zone.size.y / 2)) &&
                         ((this.center.y + this.size.y / 2) <
                          (zone.center.y + zone.size.y / 2))) {
+                        // set properties for newly safe bomb
                         this.safe = zone.color;
                         zone.bombs.push(this);
+                        this.angry = false;
                         // check if bomb is in right safezone
                         if (this.color != zone.color) {
                             IN_GAME = 2;
@@ -223,8 +228,7 @@
             else {
                 if (this.life > 0) {
                     if (this.life <= ANGRY_LIFE) {
-                        this.image.src = this.color === RED ? RED_ANGRY_URL :
-                                                              BLACK_ANGRY_URL;
+                        this.angry = true;
                     }
                     this.life -= 1;
                 } else {
@@ -289,9 +293,11 @@
         var color = Math.random()>0.5?RED:BLACK
         var dir = Math.random()>0.5?0:1
         if (color == RED) {
-            var newBomb = new Bomb(game, null, dir, color, RED_PEACEFUL_URL);
+            var newBomb = new Bomb(game, null, dir, color, RED_PEACEFUL_URL,
+                                                            RED_ANGRY_URL);
         } else {
-            var newBomb = new Bomb(game, null, dir, color, BLACK_PEACEFUL_URL);
+            var newBomb = new Bomb(game, null, dir, color, BLACK_PEACEFUL_URL,
+                                                            BLACK_ANGRY_URL);
         }
         game.bombs.push(newBomb);
     };
@@ -305,8 +311,12 @@
     };
 
     var drawBomb = function(screen, body) {
-        screen.drawImage(body.image, body.center.x - body.size.x / 2, body.center.y - body.size.y / 2, body.size.x, body.size.y);
-    };
+        if (body.angry) {
+            screen.drawImage(body.angryimage, body.center.x - body.size.x / 2, body.center.y - body.size.y / 2, body.size.x, body.size.y);
+        } else {
+            screen.drawImage(body.image, body.center.x - body.size.x / 2, body.center.y - body.size.y / 2, body.size.x, body.size.y);
+        }
+    }
 
     var colliding = function(b1, b2) {
         return !(b1 === b2 || b1.center.x + b1.size.x / 2 < b2.center.x - b2.size.x / 2 || b1.center.y + b1.size.y / 2 < b2.center.y - b2.size.y / 2 || b1.center.x - b1.size.x / 2 > b2.center.x + b2.size.x / 2 || b1.center.y - b1.size.y / 2 > b2.center.y + b2.size.y / 2);
