@@ -204,7 +204,7 @@
     };
 
     var createBomb = function(game) {
-        var newBomb = new Bomb(game, null, 1, L);
+        var newBomb = new Bomb(game, null, 1, RED);
         game.bombs.push(newBomb);
     };
 
