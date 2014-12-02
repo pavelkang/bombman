@@ -25,7 +25,9 @@ Here is a list of things I think we need to do in the future. We have the struct
 6. GRAPHICS and SOUND
 7. try bomb walk with animation
 
-Bugs:
-1. all bombs freeze when dragging and dropping a single bomb
-2. bombs sometimes escape from safezone
-3. bombs sometimes break through canvas boundaries (same bug as 2)
+Tasks (12/1):
+- Add points (when game ends)
+- Create bombs based on a global variable that determines how frequently we should add bombs
+- Create different colors for bombs, and initial position
+- Check if bombs are in correct safezone
+- If bombs in a safezone go over some threshold, clear the bombs in there
