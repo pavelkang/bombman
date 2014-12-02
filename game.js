@@ -309,15 +309,7 @@
     };
 
     var drawBomb = function(screen, body) {
-        var oldStyle = screen.fillStyle;
-        if (body.color === RED) {
-            screen.fillStyle = "pink";
-        } else {
-            screen.fillStyle = "blue";
-        }
         screen.drawImage(body.image, body.center.x - body.size.x / 2, body.center.y - body.size.y / 2, body.size.x, body.size.y);
-        // screen.fillRect(body.center.x - body.size.x / 2, body.center.y - body.size.y / 2, body.size.x, body.size.y);
-        screen.fillStyle = oldStyle;
     };
 
     var colliding = function(b1, b2) {
