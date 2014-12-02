@@ -5,9 +5,19 @@
     var draggingBomb;
     var BOMB_SIZE = 50, // size of the bomb
     BOMB_LIFE = 400, // time before the bomb explodes
+    ANGRY_LIFE = BOMB_LIFE / 3; // time when the angry face comes on
     DECISION_INT = 20, // frames between two decision making
     RED = "red",
     BLACK = "black",
+    RED_PEACEFUL_URL = "peaceful-pink.png",
+    BLACK_PEACEFUL_URL = "peaceful-black.png",
+    RED_ANGRY_URL = "angry-pink.png",
+    BLACK_ANGRY_URL = "angry-black.png",
+    EXPLODE1_URL = "explosion1.png",
+    EXPLODE2_URL = "explosion2.png",
+    EXPLODE3_URL = "explosion3.png",
+    EXPLODE4_URL = "explosion4.png",
+
     IN_GAME = 1,
     BOMB_INIT_INT = 120,
     BOMB_CREATE_INT = BOMB_INIT_INT,
@@ -91,8 +101,10 @@
         }
     };
 
-    var Bomb = function(game, center, pos, color) {
+    var Bomb = function(game, center, pos, color, src) {
         this.color = color;
+        this.image = new Image();
+        this.image.src = src;
         this.game = game;
         this.life = BOMB_LIFE;
         this.decInt = DECISION_INT;
@@ -214,6 +226,10 @@
             }
             else {
                 if (this.life > 0) {
+                    if (this.life <= ANGRY_LIFE) {
+                        this.image.src = this.color === RED ? RED_ANGRY_URL :
+                                                              BLACK_ANGRY_URL;
+                    }
                     this.life -= 1;
                 } else {
                     console.log("die TODO");
@@ -276,7 +292,11 @@
     var createBomb = function(game) {
         var color = Math.random()>0.5?RED:BLACK
         var dir = Math.random()>0.5?0:1
-        var newBomb = new Bomb(game, null, dir, color);
+        if (color == RED) {
+            var newBomb = new Bomb(game, null, dir, color, RED_PEACEFUL_URL);
+        } else {
+            var newBomb = new Bomb(game, null, dir, color, BLACK_PEACEFUL_URL);
+        }
         game.bombs.push(newBomb);
     };
 
@@ -295,7 +315,8 @@
         } else {
             screen.fillStyle = "blue";
         }
-        screen.fillRect(body.center.x - body.size.x / 2, body.center.y - body.size.y / 2, body.size.x, body.size.y);
+        screen.drawImage(body.image, body.center.x - body.size.x / 2, body.center.y - body.size.y / 2, body.size.x, body.size.y);
+        // screen.fillRect(body.center.x - body.size.x / 2, body.center.y - body.size.y / 2, body.size.x, body.size.y);
         screen.fillStyle = oldStyle;
     };
 
