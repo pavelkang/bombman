@@ -5,7 +5,7 @@
     var draggingBomb;
     var BOMB_SIZE = 50, // size of the bomb
     BOMB_LIFE = 400, // time before the bomb explodes
-    DECISION_INT = 50, // frames between two decision making
+    DECISION_INT = 20, // frames between two decision making
     RED = "red",
     BLACK = "black",
     IN_GAME = 1,
@@ -14,12 +14,15 @@
     INT_CHANGE_INT = 100,
     BOMB_MAX_INT = 30,
     ELAPSED_TIME = 0,
-    STEP = 3; // pixels the bomb moves per frame
+    MAX_BOMBS_PER_ZONE = 5,
+    TOLERANCE = BOMB_SIZE / 2 + BOMB_SIZE / 8,
+    STEP = 2; // pixels the bomb moves per frame
     var Game = function(canvasId) {
         this.canvas = document.getElementById(canvasId);
         canvas = this.canvas;
         this.scoreboard = document.getElementById("score");
         this.screen = this.canvas.getContext('2d');
+        BOMB_SIZE = this.canvas.width / 15;
         this.gameSize = {
             x: this.canvas.width,
             y: this.canvas.height
@@ -45,6 +48,7 @@
                 self.safezones.forEach(function(zone) {
                     self.score += zone.bombs.length;
                 });
+                self.scoreboard.innerHTML = self.score;
                 console.log("The final score is " + self.score);
             }
         };
@@ -122,6 +126,44 @@
                         ((this.center.y + this.size.y / 2) <
                          (zone.center.y + zone.size.y / 2))) {
                         this.safe = zone.color;
+                        zone.bombs.push(this);
+                        // check if bomb is in right safezone
+                        if (this.color != zone.color) {
+                            IN_GAME = 2;
+                            for (var i = 0; i < zone.bombs.length; i++) {
+                                for (var j = 0; j < game.bombs.length; j++) {
+                                    if (zone.bombs[i] === game.bombs[j]) {
+                                        delete game.bombs[j];
+                                        delete zone.bombs[i];
+                                        break;
+                                    }
+                                }
+                            }
+                            game.bombs = game.bombs.filter(function(bomb) {
+                                return bomb;
+                            });
+                            zone.bombs = undefined;
+                            zone.bombs = [];
+                        }
+                        // if we have enough bombs in the zone, clear it
+                        if (zone.bombs.length >= MAX_BOMBS_PER_ZONE) {
+                            for (var i = 0; i < zone.bombs.length; i++) {
+                                for (var j = 0; j < game.bombs.length; j++) {
+                                    if (zone.bombs[i] === game.bombs[j]) {
+                                        delete game.bombs[j];
+                                        delete zone.bombs[i];
+                                        break;
+                                    }
+                                }
+                            }
+                            game.bombs = game.bombs.filter(function(bomb) {
+                                return bomb;
+                            });
+                            zone.bombs = undefined;
+                            zone.bombs = [];
+                            // add score
+                            game.score += MAX_BOMBS_PER_ZONE;
+                        }
                         break;
                     }
                 }
@@ -137,8 +179,6 @@
             }
 
             if (this.safe) {
-                // possibly buggy collision code for if in safezone
-
                 for (var i = 0; i < game.safezones.length; i++) {
                     var zone = game.safezones[i];
                     if (this.safe != zone.color) {
@@ -259,8 +299,8 @@
 
     var Safezone = function(game, color) {
         this.game = game;
-        this.color = color;
         this.bombs = [];
+        this.color = color;
         this.size = {
             x: game.x / 4,
             y: 2*game.y / 5
@@ -292,7 +332,7 @@
 
     // drag drop
     var myMove = function(e) {
-        if (DRAG_OK) {
+        if (DRAG_OK && !draggingBomb.safe) {
             draggingBomb.center.x = e.pageX - canvas.offsetLeft;
             draggingBomb.center.y = e.pageY - canvas.offsetTop;
         }
@@ -302,9 +342,9 @@
         game.bombs.forEach( function(bomb) {
             x = bomb.center.x;
             y = bomb.center.y;
-            if (e.pageX < x + 15 + canvas.offsetLeft && e.pageX > x - 15 +
-                canvas.offsetLeft && e.pageY < y + 15 + canvas.offsetTop &&
-                e.pageY > y -15 + canvas.offsetTop) {
+            if (e.pageX < x + TOLERANCE + canvas.offsetLeft && e.pageX > x - TOLERANCE +
+                canvas.offsetLeft && e.pageY < y + TOLERANCE + canvas.offsetTop &&
+                e.pageY > y - TOLERANCE  + canvas.offsetTop) {
                 draggingBomb = bomb;
                 DRAG_OK = true;
                 canvas.onmousemove = myMove;
