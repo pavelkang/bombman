@@ -119,20 +119,22 @@
           }
           var topdiff = (zone.center.y - zone.size.y / 2) -
                         (this.center.y - this.size.y / 2);
-          if (0 <= topdiff && topdiff <= STEP) {
+          if (0 <= topdiff && topdiff <= STEP && this.diry < 0) {
             this.diry *= -1;
           }
           var bottomdiff = (this.center.y + this.size.y / 2) -
                            (zone.center.y + zone.size.y / 2);
-          if (0 <= bottomdiff && bottomdiff <= STEP) {
+          if (0 <= bottomdiff && bottomdiff <= STEP && this.diry > 0) {
             this.diry *= -1;
           }
-          if ((zone.center.x - zone.size.x / 2) -
-              (this.center.x - this.size.x / 2) <= STEP) {
+          var leftdiff = (zone.center.x - zone.size.x / 2) -
+                         (this.center.x - this.size.x / 2);
+          if (0 <= leftdiff && leftdiff <= STEP && this.dirx < 0) {
             this.dirx *= -1;
           }
-          if ((this.center.x + this.size.x / 2) -
-              (zone.center.x + zone.size.x / 2) <= STEP) {
+          var rightdiff = (this.center.x + this.size.x / 2) -
+                          (zone.center.x + zone.size.x / 2);
+          if (0 <= rightdiff && rightdiff <= STEP && this.dirx > 0) {
             this.dirx *= -1;
           }
         }
