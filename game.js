@@ -8,8 +8,13 @@
     DECISION_INT = 50, // frames between two decision making
     RED = "red",
     BLACK = "black",
+    IN_GAME = 1,
+    BOMB_INIT_INT = 120,
+    BOMB_CREATE_INT = BOMB_INIT_INT,
+    INT_CHANGE_INT = 100,
+    BOMB_MAX_INT = 30,
+    ELAPSED_TIME = 0,
     STEP = 3; // pixels the bomb moves per frame
-
     var Game = function(canvasId) {
         this.canvas = document.getElementById(canvasId);
         canvas = this.canvas;
@@ -29,17 +34,35 @@
                           new Safezone(this.gameSize, BLACK)];
         var self = this;
         var tick = function() {
-            self.update();
-            self.draw(self.screen, self.gameSize);
-            requestAnimationFrame(tick);
+            if (IN_GAME == 0) { // game start
+            } else if (IN_GAME == 1) {
+                self.update();
+                self.draw(self.screen, self.gameSize);
+                requestAnimationFrame(tick);
+            } else if (IN_GAME == 2){
+                console.log("Game Over!");
+                /* Calculate the final score */
+                self.safezones.forEach(function(zone) {
+                    self.score += zone.bombs.length;
+                });
+                console.log("The final score is " + self.score);
+            }
         };
         tick();
-        for (var i = 0; i < 20; i++) {
-            createBomb(this);
-        }
     };
     Game.prototype = {
         update: function() {
+            ELAPSED_TIME += 1;
+            var stage = Math.floor(ELAPSED_TIME / INT_CHANGE_INT);
+            if (BOMB_CREATE_INT > BOMB_MAX_INT &&
+                BOMB_INIT_INT-stage*10 != BOMB_CREATE_INT) {
+                BOMB_CREATE_INT = BOMB_INIT_INT - stage*10;
+                console.log("Create interval is now changed to "
+                            + BOMB_CREATE_INT);
+            }
+            if (ELAPSED_TIME % BOMB_CREATE_INT === 0) {
+                createBomb(this);
+            }
             this.bombs.forEach(function(bomb) {
                 bomb.update();
             })
@@ -145,9 +168,10 @@
             }
             else {
                 if (this.life > 0) {
-                    this.life -= -1;
+                    this.life -= 1;
                 } else {
                     console.log("die TODO");
+                    IN_GAME = 2;
                     return;
                 }
 
@@ -204,7 +228,9 @@
     };
 
     var createBomb = function(game) {
-        var newBomb = new Bomb(game, null, 1, RED);
+        var color = Math.random()>0.5?RED:BLACK
+        var dir = Math.random()>0.5?0:1
+        var newBomb = new Bomb(game, null, dir, color);
         game.bombs.push(newBomb);
     };
 
@@ -218,7 +244,11 @@
 
     var drawBomb = function(screen, body) {
         var oldStyle = screen.fillStyle;
-        screen.fillStyle = "yellow";
+        if (body.color === RED) {
+            screen.fillStyle = "pink";
+        } else {
+            screen.fillStyle = "blue";
+        }
         screen.fillRect(body.center.x - body.size.x / 2, body.center.y - body.size.y / 2, body.size.x, body.size.y);
         screen.fillStyle = oldStyle;
     };
@@ -230,6 +260,7 @@
     var Safezone = function(game, color) {
         this.game = game;
         this.color = color;
+        this.bombs = [];
         this.size = {
             x: game.x / 4,
             y: 2*game.y / 5
@@ -279,15 +310,6 @@
                 canvas.onmousemove = myMove;
             }
         })
-        /*
-          if (e.pageX < x + 15 + canvas.offsetLeft && e.pageX > x - 15 +
-          canvas.offsetLeft && e.pageY < y + 15 + canvas.offsetTop &&
-          e.pageY > y -15 + canvas.offsetTop){
-          x = e.pageX - canvas.offsetLeft;
-          y = e.pageY - canvas.offsetTop;
-          DRAG_OK = true;
-          canvas.onmousemove = myMove;
-          }*/
     }
 
     var myUp = function(){
