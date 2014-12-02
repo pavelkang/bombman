@@ -13,11 +13,6 @@
     BLACK_PEACEFUL_URL = "peaceful-black.png",
     RED_ANGRY_URL = "angry-pink.png",
     BLACK_ANGRY_URL = "angry-black.png",
-    EXPLODE1_URL = "explosion1.png",
-    EXPLODE2_URL = "explosion2.png",
-    EXPLODE3_URL = "explosion3.png",
-    EXPLODE4_URL = "explosion4.png",
-
     IN_GAME = 1,
     BOMB_INIT_INT = 120,
     BOMB_CREATE_INT = BOMB_INIT_INT,
