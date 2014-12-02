@@ -148,7 +148,7 @@
         if (this === draggingBomb) return;
 
         // check for collision with canvas bounds
-        if ((this.center.x - this.size.x / 2) < 10 && this.dirx < 0) {
+        if ((this.center.x - this.size.x / 2) < 0 && this.dirx < 0) {
           this.dirx *= -1;
         }
         if ((this.center.x + this.size.x / 2) > canvas.width
