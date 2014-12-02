@@ -6,7 +6,10 @@
     var BOMB_SIZE = 50, // size of the bomb
     BOMB_LIFE = 400, // time before the bomb explodes
     DECISION_INT = 50, // frames between two decision making
+    RED = "red",
+    BLACK = "black",
     STEP = 3; // pixels the bomb moves per frame
+
     var Game = function(canvasId) {
         this.canvas = document.getElementById(canvasId);
         canvas = this.canvas;
@@ -22,7 +25,8 @@
         };
         this.score = 0;
         this.bombs = [];
-        this.safezones = [new Safezone(this.gameSize, "red"), new Safezone(this.gameSize, "black")];
+        this.safezones = [new Safezone(this.gameSize, RED),
+                          new Safezone(this.gameSize, BLACK)];
         var self = this;
         var tick = function() {
             self.update();
@@ -54,8 +58,8 @@
         }
     };
 
-    var Bomb = function(game, center, pos) {
-        // pos 0 : top, 1 : bottom
+    var Bomb = function(game, center, pos, color) {
+        this.color = color;
         this.game = game;
         this.life = BOMB_LIFE;
         this.decInt = DECISION_INT;
@@ -200,7 +204,7 @@
     };
 
     var createBomb = function(game) {
-        var newBomb = new Bomb(game, null, 1);
+        var newBomb = new Bomb(game, null, 1, L);
         game.bombs.push(newBomb);
     };
 
@@ -230,13 +234,13 @@
             x: game.x / 4,
             y: 2*game.y / 5
         };
-        if (color === "red") {
+        if (color === RED) {
             this.center = {
                 x: 0 + (this.size.x / 2),
                 y: (game.y / 2)
             }
         }
-        else if (color === "black") {
+        else if (color === BLACK) {
             this.center = {
                 x: (game.x - this.size.x) + (this.size.x / 2),
                 y: (game.y / 2)
