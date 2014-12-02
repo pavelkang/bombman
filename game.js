@@ -111,7 +111,6 @@
 
       if (this.safe) {
         // possibly buggy collision code for if in safezone
-        if (DRAG_OK) return;
 
         for (var i = 0; i < game.safezones.length; i++) {
           var zone = game.safezones[i];
@@ -146,7 +145,7 @@
           return;
         }
 
-        if (DRAG_OK) return;
+        if (this === draggingBomb) return;
 
         // check for collision with canvas bounds
         if ((this.center.x - this.size.x / 2) < 10 && this.dirx < 0) {
