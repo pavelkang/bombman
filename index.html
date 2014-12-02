@@ -13,30 +13,36 @@
        url('ks.otf')  format('truetype'), /* Safari, Android, iOS */
      }
      body {
-       font-family : ks
+       font-family : ks;
+       font-size : 16px;
      }
-     #gameStartButton {
+     #actualGame {
+       display : none
      }
-     #scoreParagraph {
-       display : none;
-     }
-     #screen {
-       display : none;
-     }
-     #gameOverMessage {
-       display : none;
+     #end {
+       display : none
      }
     </style>
     <script type="text/javascript" src="game.js"></script>
   </head>
   <body>
     <center>
-      <img id="logo" src="logo.png">
-      <div id="gameStartMessage"> Game Start ! </div>
-      <button id="gameStartButton">Let's go</button>
-      <p id="scoreParagraph"><span>Score: </span><span id="score">0</span></p>
-      <canvas id="screen" width="810" height="510" style="border: 1px solid blue"></canvas>
-      <div id="gameOverMessage">Game Over!</div>
+      <div id="start">
+        <img id="logo" src="logo.png">
+        <div id="gameStartMessage">Don't drop the bomb! They exploooooooode!</div>
+        <span>
+          <img id="gameStartButton" src="bombking.png"
+               style="width:5%; height:5%">
+        </span>
+      </div>
+      <div id="actualGame">
+        <p id="scoreParagraph"><span>Score: </span><span id="score">0</span></p>
+        <canvas id="screen" width="810" height="510" style="border: 1px solid blue"></canvas>
+      </div>
+      <div id="end">
+        <img src="ghost.png">
+        <div id="gameOverMessage" style="font-size:22px">Game Over!</div>
+      </div>
     </center>
   </body>
 </html>

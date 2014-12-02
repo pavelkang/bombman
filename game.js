@@ -53,19 +53,15 @@
                 self.draw(self.screen, self.gameSize);
                 requestAnimationFrame(tick);
             } else if (IN_GAME == 2){
-                document.getElementById("scoreParagraph")
+                document.getElementById("actualGame")
                     .style.display = "none"
-                document.getElementById("screen")
-                    .style.display = "none"
-                document.getElementById("gameOverMessage")
+                document.getElementById("end")
                     .style.display = "block"
-                console.log("Game Over!");
                 /* Calculate the final score */
                 self.safezones.forEach(function(zone) {
                     self.score += zone.bombs.length;
                 });
                 self.scoreboard.innerHTML = self.score;
-                console.log("The final score is " + self.score);
             }
         };
         tick();
@@ -349,11 +345,8 @@
 
     window.onload = function() {
         var clickToBegin = function(e) {
-            document.getElementById("gameStartMessage").style.display = "none"
-            document.getElementById("gameStartButton").style.display = "none"
-            document.getElementById("logo").style.display = "none"
-            document.getElementById("scoreParagraph").style.display = "block"
-            document.getElementById("screen").style.display = "block"
+            document.getElementById("start").style.display = "none"
+            document.getElementById("actualGame").style.display = "block"
             game = new Game('screen');
             canvas.onmousedown = myDown;
             canvas.onmouseup = myUp;
