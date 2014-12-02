@@ -187,7 +187,7 @@
                             }, 2000);
                         }
                         // if we have enough bombs in the zone, clear it
-                        if (zone.bombs.length >= MAX_BOMBS_PER_ZONE) {
+                        else if (zone.bombs.length >= MAX_BOMBS_PER_ZONE) {
                             for (var i = 0; i < zone.bombs.length; i++) {
                                 for (var j = 0; j < game.bombs.length; j++) {
                                     if (zone.bombs[i] === game.bombs[j]) {
