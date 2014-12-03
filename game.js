@@ -55,6 +55,10 @@
                 requestAnimationFrame(tick);
             } else if (IN_GAME == 2){
                 setTimeout(function() {
+                    /* Calculate the final score */
+                    self.safezones.forEach(function(zone) {
+                        self.score += zone.bombs.length;
+                    });
                     document.getElementById("actualGame")
                         .style.display = "none"
                     document.getElementById("end")
@@ -63,15 +67,11 @@
                         .style.display = "none"
                     document.getElementById("screen")
                         .style.display = "none"
+                    console.log(self.score);
                     document.getElementById("finalScore").innerHTML=self.score;
                     document.getElementById("gameOverMessage")
                         .style.display = "block"
-                    /* Calculate the final score */
-                    self.safezones.forEach(function(zone) {
-                        self.score += zone.bombs.length;
-                    });
                     self.scoreboard.innerHTML = self.score;
-                    console.log("The final score is " + self.score);
                 }, 2500);
             }
         };
@@ -84,8 +84,6 @@
             if (BOMB_CREATE_INT > BOMB_MAX_INT &&
                 BOMB_INIT_INT-stage*10 != BOMB_CREATE_INT) {
                 BOMB_CREATE_INT = BOMB_INIT_INT - stage*10;
-                console.log("Create interval is now changed to "
-                            + BOMB_CREATE_INT);
             }
             if (ELAPSED_TIME % BOMB_CREATE_INT === 0) {
                 createBomb(this);
