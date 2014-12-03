@@ -3,6 +3,7 @@
     var canvas;
     var game;
     var draggingBomb;
+    var audioelem = document.getElementById("music");
     var BOMB_SIZE = 50, // size of the bomb
     BOMB_LIFE = 400, // time before the bomb explodes
     ANGRY_LIFE = BOMB_LIFE / 3; // time when the angry face comes on
@@ -55,6 +56,8 @@
                 requestAnimationFrame(tick);
             } else if (IN_GAME == 2){
                 setTimeout(function() {
+                    var audioelem = document.getElementById("music");
+                    audioelem.pause();
                     /* Calculate the final score */
                     self.safezones.forEach(function(zone) {
                         self.score += zone.bombs.length;
@@ -168,6 +171,7 @@
                                 });
                             }, 1000);
                             setTimeout(function() {
+
                                 for (var i = 0; i < zone.bombs.length; i++) {
                                     for (var j = 0; j < game.bombs.length; j++) {
                                         if (zone.bombs[i] === game.bombs[j]) {
@@ -380,6 +384,8 @@
             game = new Game('screen');
             canvas.onmousedown = myDown;
             canvas.onmouseup = myUp;
+            var audioelem = document.getElementById("music");
+            audioelem.play();
         }
         document.getElementById("gameStartButton")
             .addEventListener("click", clickToBegin)
