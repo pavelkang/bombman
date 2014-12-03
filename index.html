@@ -22,6 +22,16 @@
      #end {
        display : none
      }
+     a {
+       text-decoration: none !important;
+     }
+     a:hover {
+       color : tomato;
+     }
+     a:visited {
+       color : black;
+     }
+
     </style>
     <script type="text/javascript" src="game.js"></script>
   </head>
@@ -41,7 +51,9 @@
       </div>
       <div id="end">
         <img src="ghost.png">
-        <div id="gameOverMessage" style="font-size:22px">Game Over!</div>
+        <div id="gameOverMessage" style="font-size:22px">Game Over! You got: </div>
+        <p id="finalScore"></p>
+        <a href="/" id="try">Try Again!</a>
       </div>
     </center>
   </body>

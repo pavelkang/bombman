@@ -63,9 +63,9 @@
                         .style.display = "none"
                     document.getElementById("screen")
                         .style.display = "none"
+                    document.getElementById("finalScore").innerHTML=self.score;
                     document.getElementById("gameOverMessage")
                         .style.display = "block"
-                    console.log("Game Over!");
                     /* Calculate the final score */
                     self.safezones.forEach(function(zone) {
                         self.score += zone.bombs.length;
